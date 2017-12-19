@@ -1,0 +1,9 @@
+body {
+    min-width: 500px;
+}
+
+#toast-container {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+}
