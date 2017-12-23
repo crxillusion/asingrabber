@@ -4,6 +4,23 @@ Array.prototype.unique = function () {
     });
 };
 
+function downloadCSV(stockData) {
+    var data, filename, link;
+    var csv = stockData;
+    if (csv == null) return;
+
+    filename = 'asins.csv';
+
+    if (!csv.match(/^data:text\/csv/i)) {
+        csv = 'data:text/csv;charset=utf-8,' + csv;
+    }
+    data = encodeURI(csv);
+
+    link = document.createElement('a');
+    link.setAttribute('href', data);
+    link.setAttribute('download', filename);
+    link.click();
+}
 
 $(document).ready(function () {
 
@@ -15,21 +32,23 @@ $(document).ready(function () {
         }
     });
 
-
     document.getElementById('copy_asins').addEventListener('click', function (event) {
         var copyTextarea = document.querySelector('#asins');
         copyTextarea.select();
 
         try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            if (successful) {
+            if (document.execCommand('copy')) {
                 Materialize.toast("Copied!", 2000)
             }
         } catch (err) {
             Materialize.toast("Something went wrong.", 2000)
         }
     });
+
+    document.getElementById('download_asins').addEventListener('click', function (event) {
+        downloadCSV($('#asins').text().split(',').join(",\n"));
+    });
+
 
 });
 
