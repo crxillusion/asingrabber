@@ -4,13 +4,15 @@ Array.prototype.unique = function () {
     });
 };
 
-function downloadCSV(stockData) {
+function downloadCSV(stockData, count) {
     var data, filename, link;
     var csv = stockData;
     if (csv == null) return;
-
+    if (count !== csv.length && !isNaN(count)) {
+        csv = csv.slice(0, count);
+    }
     filename = 'asins.csv';
-
+    csv = csv.join(',\n');
     if (!csv.match(/^data:text\/csv/i)) {
         csv = 'data:text/csv;charset=utf-8,' + csv;
     }
@@ -28,11 +30,11 @@ $(document).ready(function () {
         file: "getDomString.js"
     }, function () {
         if (chrome.extension.lastError) {
-            $('#asins').text('There was an error processing a page : \n' + chrome.extension.lastError.message);
+            Materialize.toast('There was an error processing a page : \n' + chrome.extension.lastError.message, 5000, 'red rounded');
         }
     });
 
-    document.getElementById('copy_asins').addEventListener('click', function (event) {
+    /*document.getElementById('copy_asins').addEventListener('click', function (event) {
         var copyTextarea = document.querySelector('#asins');
         copyTextarea.select();
 
@@ -43,10 +45,19 @@ $(document).ready(function () {
         } catch (err) {
             Materialize.toast("Something went wrong.", 2000)
         }
-    });
+    });*/
 
     document.getElementById('download_asins').addEventListener('click', function (event) {
-        downloadCSV($('#asins').text().split(',').join(",\n"));
+        if ($('#asins').text().length === 0) {
+            Materialize.toast("No data to download!", 2000);
+        } else {
+            var count = parseInt($('#max_value').val()), data = $('#asins').text().split(',');
+            if (count <= 0 || count > data.length) {
+                Materialize.toast("Please enter valid number!", 2000);
+            } else {
+                downloadCSV(data, count);
+            }
+        }
     });
 
 
